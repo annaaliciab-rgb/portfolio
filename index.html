@@ -53,10 +53,9 @@ h1,h2,h3{text-wrap:balance}
 .hero h1{font-family:var(--head);font-weight:800;text-transform:uppercase;color:var(--ink);font-size:clamp(44px,7.6vw,96px);line-height:.95;letter-spacing:-.015em;margin:0 0 26px}
 .hero h1 .accent{color:var(--lav)}
 .rotor{font-family:var(--head);font-weight:600;font-size:clamp(18px,2.2vw,24px);margin:0 0 16px;display:flex;gap:.35em;flex-wrap:wrap;align-items:baseline}
-.rotor .slot{position:relative;display:inline-grid;color:var(--lav-deep)}
-.rotor .slot span{grid-area:1/1;transition:opacity .5s var(--ease), transform .5s var(--ease)}
-.rotor .slot span.out{opacity:0;transform:translateY(-.6em)}
-.rotor .slot span.in-wait{opacity:0;transform:translateY(.6em)}
+.rotor .slot{color:var(--lav-deep);display:inline-block;min-height:1.3em}
+.rotor .slot span{display:inline-block;transition:opacity .38s var(--ease), transform .38s var(--ease)}
+.rotor .slot span.out{opacity:0;transform:translateY(-.35em)}
 .hero p{margin:0 0 26px;max-width:52ch;color:var(--ink-2);font-size:17px}
 .cta{display:flex;gap:12px;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--lav);padding:12px 20px;border-radius:999px;background:transparent;color:var(--ink);cursor:pointer;font-family:var(--head);font-weight:600;font-size:14px;text-decoration:none;transition:background .25s,color .25s,transform .25s var(--ease)}
@@ -282,7 +281,7 @@ dialog::backdrop{background:rgba(31,28,41,.35);backdrop-filter:blur(6px)}
   <section class="hero" id="top">
     <div>
       <h1>Anna-Alicia <span class="accent">Bass</span></h1>
-      <div class="rotor" aria-live="polite"><span class="slot" id="rotor"><span>Creative Director</span></span></div>
+      <div class="rotor" aria-live="polite"><span class="slot" id="rotor"><span id="rotor-word">Creative Director</span></span></div>
       <p>Los Angeles-based. Visual work across branding, marketing, digital media and experiential design, for clients in entertainment, fashion, retail and tech. Designing since 2014, from seasonal packaging to full trade-show identities.</p>
       <div class="cta">
         <a class="btn solid" href="#work">See the work <span class="arr">→</span></a>
@@ -553,16 +552,19 @@ if(!reduce){
 /* ---------- rotating title ---------- */
 (function(){
   const words = ["Creative Director","Art Director","Graphic Designer","Brand Builder"];
-  const slot = $("#rotor"); let i = 0;
-  if(reduce) return;
+  const word = $("#rotor-word"); let i = 0, busy = false;
+  if(reduce || !word) return;
   setInterval(()=>{
-    const old = slot.querySelector("span:not(.out)");
-    i = (i+1) % words.length;
-    const nw = document.createElement("span"); nw.textContent = words[i]; nw.className = "in-wait";
-    slot.appendChild(nw);
-    requestAnimationFrame(()=>requestAnimationFrame(()=>nw.className=""));
-    if(old){ old.className = "out"; setTimeout(()=>old.remove(), 600); }
-  }, 2600);
+    if(document.hidden || busy) return;
+    busy = true;
+    word.classList.add("out");
+    setTimeout(()=>{
+      i = (i+1) % words.length;
+      word.textContent = words[i];
+      word.classList.remove("out");
+      busy = false;
+    }, 380);
+  }, 2800);
 })();
 
 /* ---------- marquee ---------- */
