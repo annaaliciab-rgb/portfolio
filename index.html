@@ -146,27 +146,6 @@ h1,h2,h3{text-wrap:balance}
 .index .yr{font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
 .empty{padding:40px 0;color:var(--ink-2)}
 
-/* timeline */
-.tl{overflow-x:auto;padding-bottom:6px}
-.tl-inner{min-width:640px}
-.tl-row{display:grid;grid-template-columns:230px 1fr;align-items:center;gap:16px;min-height:40px;border-radius:8px}
-.tl-axis .track{position:relative;height:24px}
-.tick{position:absolute;bottom:4px;transform:translateX(-50%);font-family:var(--head);font-weight:500;font-size:11px;color:var(--ink-2);font-variant-numeric:tabular-nums}
-.tl-body .track{position:relative;height:40px}
-.gridline{position:absolute;top:0;bottom:0;width:1px;background:var(--rule)}
-.tl-body{transition:background .2s}
-.tl-body:hover{background:var(--mist)}
-.tl-name{all:unset;cursor:pointer;font-size:14px;line-height:1.25;color:var(--ink);padding-left:8px}
-.tl-name b{font-family:var(--head);font-weight:700;display:block}
-.tl-name span{color:var(--ink-2);font-size:13px}
-.tl-name:focus-visible{outline:2px solid var(--lav);outline-offset:2px}
-.bar{all:unset;cursor:pointer;position:absolute;top:50%;height:10px;transform:translateY(-50%);border-radius:999px;background:var(--lav-line);min-width:10px;transition:height .25s var(--ease), background .25s}
-.bar.cd{background:var(--lav)}
-.tl-body:hover .bar{height:16px;background:var(--lav-deep)}
-.bar:focus-visible{outline:2px solid var(--lav-deep);outline-offset:2px}
-.tl-key{display:flex;gap:18px;margin-top:16px;font-size:13px;color:var(--ink-2);flex-wrap:wrap}
-.tl-key i{display:inline-block;width:22px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
-
 /* about */
 .about{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(24px,5vw,72px)}
 .about p{margin:0 0 16px;max-width:62ch;color:var(--ink-2)}
@@ -261,7 +240,6 @@ dialog::backdrop{background:rgba(31,28,41,.35);backdrop-filter:blur(6px)}
   .cs-art{padding:18px}
   .cs-body{max-height:none}
   dialog{overflow:auto}
-  .tl-row{grid-template-columns:160px 1fr}
   .top nav{gap:16px}
 }
 @media (prefers-reduced-motion:reduce){
@@ -275,7 +253,7 @@ dialog::backdrop{background:rgba(31,28,41,.35);backdrop-filter:blur(6px)}
 <div class="wrap">
   <header class="top">
     <a class="mark" href="#top" aria-label="Anna-Alicia Bass, back to top"><span>ANNA-ALICIA BASS</span></a>
-    <nav><a href="#work">Work</a><a href="#experience">Experience</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+    <nav><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
   </header>
 
   <section class="hero" id="top">
@@ -318,16 +296,7 @@ dialog::backdrop{background:rgba(31,28,41,.35);backdrop-filter:blur(6px)}
     </div>
   </section>
 
-  <section class="sec" id="experience">
-    <div class="sec-head">
-      <div><div class="label">Experience</div><h2>Twelve years, drawn to scale</h2>
-      <p class="intro">Each bar is a role, placed by its real start and end month. Select one to open the project.</p></div>
-    </div>
-    <div class="tl"><div class="tl-inner" id="tl"></div></div>
-    <div class="tl-key"><span><i style="background:var(--lav)"></i>Creative / art direction</span><span><i style="background:var(--lav-line)"></i>Design</span></div>
-  </section>
-
-  <section class="sec" id="about">
+    <section class="sec" id="about">
     <div class="label">About</div>
     <div class="about">
       <div>
@@ -654,24 +623,6 @@ function render(){
 }
 $("#v-grid").onclick=()=>{view="grid";try{localStorage.setItem("aab-view",view)}catch(e){}render();};
 $("#v-index").onclick=()=>{view="index";try{localStorage.setItem("aab-view",view)}catch(e){}render();};
-
-/* ---------- timeline ---------- */
-(function(){
-  const Y0=2014, Y1=2026, span=Y1-Y0;
-  const pos=([y,m],end)=>((y+(m-1+(end?1:0))/12)-Y0)/span*100;
-  const roles = PROJECTS.filter(p=>p.start).slice().sort((a,b)=>(b.start[0]*12+b.start[1])-(a.start[0]*12+a.start[1]));
-  let html = `<div class="tl-row tl-axis"><div></div><div class="track">`;
-  for(let y=Y0;y<=Y1;y+=2) html += `<span class="tick" style="left:${(y-Y0)/span*100}%">${y}</span>`;
-  html += `</div></div>`;
-  const grid = [...Array(span/2+1)].map((_,k)=>`<i class="gridline" style="left:${(k*2)/span*100}%"></i>`).join("");
-  roles.forEach(p=>{
-    const l=pos(p.start,false), r=pos(p.end,true);
-    html += `<div class="tl-row tl-body"><button class="tl-name" data-id="${p.id}"><b>${esc(p.title)}</b><span>${esc(p.role.split(" / ")[0])}</span></button>
-      <div class="track">${grid}<button class="bar${p.lead?' cd':''}" data-id="${p.id}" style="left:${l}%;width:${r-l}%" aria-label="${esc(p.title)}, ${esc(p.years)}" title="${esc(p.title)} · ${esc(p.years)}"></button></div></div>`;
-  });
-  $("#tl").innerHTML = html;
-  $("#tl").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>openCase(b.dataset.id));
-})();
 
 /* ---------- project detail ---------- */
 function renderViewer(p, i, k){
