@@ -468,6 +468,8 @@ const LINKS = {
 };
 PROJECTS.forEach(p=>{ p.links = LINKS[p.id] || []; });
 PROJECTS.forEach(p=>{ p.links.forEach(l=>{ const id=l.url.split("/").pop().split("?")[0]; p.media.push({type:"youtube", id, title:l.title, src:`https://i.ytimg.com/vi/${id}/hqdefault.jpg`, poster:`https://i.ytimg.com/vi/${id}/hqdefault.jpg`, w:480, h:360}); }); });
+/* show only projects that have images, video or watchable links */
+for(let k=PROJECTS.length-1;k>=0;k--){ const q=PROJECTS[k]; if(!(q.media.length || (q.links&&q.links.length))) PROJECTS.splice(k,1); }
 const ORDER = ["total-product-expo","hbo","oculus-pride","uber","industry-night","westfield","grey-goose","microsoft-winter-wonder","american-girl","nysf","amazing-magazine","seafoam","grounds-for-sculpture","art-culture","george-lopez","mad-comedy","bay-local","bakers-crust"];
 PROJECTS.sort((a,b)=>{ const ia=ORDER.indexOf(a.id), ib=ORDER.indexOf(b.id); return (ia<0?99:ia)-(ib<0?99:ib); });
 
